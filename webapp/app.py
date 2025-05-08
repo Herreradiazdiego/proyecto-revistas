@@ -20,15 +20,13 @@ def index():
 @app.route('/area')
 def listar_areas():
     data = load_data()
-    # recopilar todas las áreas únicas
     areas = sorted({a for rev in data.values() for a in rev['areas']})
     return render_template('areas.html', areas=areas)
 
 @app.route('/area/<area>')
 def ver_area(area):
     data = load_data()
-    # filtrar revistas que contengan esa área
-    subset = {t:v for t,v in data.items() if area in v['areas']}
+    subset = {t: v for t, v in data.items() if area in v['areas']}
     return render_template('tabla.html',
                            titulo=f'Área: {area}',
                            items=subset)
@@ -36,13 +34,13 @@ def ver_area(area):
 @app.route('/catalogo')
 def listar_catalogos():
     data = load_data()
-    cats = sorted({c for rev in data.values() for c in rev['catalogos']})
-    return render_template('catalogos.html', catalogos=cats)
+    catalogos = sorted({c for rev in data.values() for c in rev['catalogos']})
+    return render_template('catalogos.html', catalogos=catalogos)
 
 @app.route('/catalogo/<cat>')
 def ver_catalogo(cat):
     data = load_data()
-    subset = {t:v for t,v in data.items() if cat in v['catalogos']}
+    subset = {t: v for t, v in data.items() if cat in v['catalogos']}
     return render_template('tabla.html',
                            titulo=f'Catálogo: {cat}',
                            items=subset)
@@ -55,21 +53,20 @@ def explorar():
 @app.route('/explorar/<letra>')
 def ver_letra(letra):
     data = load_data()
-    subset = {t:v for t,v in data.items() if t.upper().startswith(letra.upper())}
+    subset = {t: v for t, v in data.items() if t.upper().startswith(letra.upper())}
     return render_template('tabla.html',
                            titulo=f'Revistas que empiezan con "{letra.upper()}"',
                            items=subset)
 
 @app.route('/buscar')
 def buscar():
-    q = request.args.get('q','').strip().lower()
+    q = request.args.get('q', '').strip().lower()
     if not q:
         return render_template('buscar.html', items={}, q=q)
     data = load_data()
-    # unión de resultados si contiene cualquiera de las palabras de búsqueda
     palabras = q.split()
     resultado = {}
-    for t,v in data.items():
+    for t, v in data.items():
         if any(p in t for p in palabras):
             resultado[t] = v
     return render_template('buscar.html', items=resultado, q=q)
@@ -85,11 +82,10 @@ def ver_revista(titulo):
 @app.route('/creditos')
 def creditos():
     autores = [
-      {'nombre':'Alumno 1','foto_url':'/static/fotos/alumno1.jpg'},
-      {'nombre':'Alumno 2','foto_url':'/static/fotos/alumno2.jpg'},
-      # agrega más si es necesario
+        'Diego Herrera Díaz',
+        'Carlos Sebastián Sapién Cano'
     ]
     return render_template('creditos.html', autores=autores)
 
-if __name__=='__main__':
+if __name__ == '__main__':
     app.run(debug=True)

@@ -4,9 +4,9 @@ import json
 
 def main():
     # Definir rutas base
-    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    areas_dir = os.path.join(base_dir, 'datos', 'csv', 'areas')
-    cats_dir = os.path.join(base_dir, 'datos', 'csv', 'catalogos')
+    base_dir    = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    areas_dir   = os.path.join(base_dir, 'datos', 'csv', 'areas')
+    cats_dir    = os.path.join(base_dir, 'datos', 'csv', 'catalogos')
     output_path = os.path.join(base_dir, 'datos', 'json', 'revistas.json')
 
     revistas = {}
@@ -17,9 +17,8 @@ def main():
             continue
         path = os.path.join(areas_dir, fname)
         with open(path, newline='', encoding='latin-1') as f:
-            reader = csv.reader(f)
-            # Saltar encabezado si existe
-            next(reader, None)
+            reader = csv.reader(f, delimiter=';')
+            next(reader, None)  # saltar header
             for row in reader:
                 if len(row) < 2:
                     continue
@@ -27,10 +26,7 @@ def main():
                 area   = row[1].strip().upper()
                 if not titulo:
                     continue
-                # Inicializar entrada si no existe
-                if titulo not in revistas:
-                    revistas[titulo] = {'areas': [], 'catalogos': []}
-                # Agregar área sin duplicados
+                revistas.setdefault(titulo, {'areas': [], 'catalogos': []})
                 if area and area not in revistas[titulo]['areas']:
                     revistas[titulo]['areas'].append(area)
 
@@ -40,8 +36,8 @@ def main():
             continue
         path = os.path.join(cats_dir, fname)
         with open(path, newline='', encoding='latin-1') as f:
-            reader = csv.reader(f)
-            next(reader, None)
+            reader = csv.reader(f, delimiter=';')
+            next(reader, None)  # saltar header
             for row in reader:
                 if len(row) < 2:
                     continue
@@ -49,8 +45,7 @@ def main():
                 catalogo = row[1].strip().upper()
                 if not titulo:
                     continue
-                if titulo not in revistas:
-                    revistas[titulo] = {'areas': [], 'catalogos': []}
+                revistas.setdefault(titulo, {'areas': [], 'catalogos': []})
                 if catalogo and catalogo not in revistas[titulo]['catalogos']:
                     revistas[titulo]['catalogos'].append(catalogo)
 

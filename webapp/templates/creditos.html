@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Créditos – Catálogo de Revistas{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Créditos</h2>
+  <ul class="list-group">
+    {% for nombre in autores %}
+      <li class="list-group-item">{{ nombre }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

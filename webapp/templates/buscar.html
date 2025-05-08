@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Buscar – Catálogo de Revistas{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Buscar revistas</h2>
+  <form method="get" action="{{ url_for('buscar') }}" class="mb-3">
+    <div class="input-group">
+      <input
+        name="q"
+        type="text"
+        class="form-control"
+        placeholder="Escribe parte del título…"
+        value="{{ q }}"
+      >
+      <button class="btn btn-primary" type="submit">Buscar</button>
+    </div>
+  </form>
+
+  {% if items %}
+    {% include 'tabla_fragment.html' %}
+  {% elif q %}
+    <p>No se encontraron revistas para “<strong>{{ q }}</strong>”.</p>
+  {% endif %}
+</div>
+{% endblock %}

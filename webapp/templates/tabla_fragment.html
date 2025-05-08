@@ -1,0 +1,21 @@
+<table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Revista</th>
+        <th>H-Index</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for titulo, rev in items.items() %}
+        <tr>
+          <td>
+            <a href="{{ url_for('ver_revista', titulo=titulo) }}">
+              {{ titulo }}
+            </a>
+          </td>
+          <td>{{ rev.h_index or '–' }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  

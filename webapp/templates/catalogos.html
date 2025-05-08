@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Catálogos – Catálogo de Revistas{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Catálogos</h2>
+  <ul class="list-group">
+    {% for catalogo in catalogos %}
+      <li class="list-group-item">
+        <a href="{{ url_for('ver_catalogo', cat=catalogo) }}">{{ catalogo }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

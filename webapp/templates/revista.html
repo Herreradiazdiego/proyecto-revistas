@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ titulo }} – Detalle{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>{{ titulo }}</h2>
+  <dl class="row">
+    <dt class="col-sm-3">H-Index</dt>
+    <dd class="col-sm-9">{{ rev.h_index or '–' }}</dd>
+
+    <dt class="col-sm-3">Sitio web</dt>
+    <dd class="col-sm-9">
+      {% if rev.site_web %}
+        <a href="{{ rev.site_web }}" target="_blank">{{ rev.site_web }}</a>
+      {% else %}
+        –
+      {% endif %}
+    </dd>
+
+    <dt class="col-sm-3">Área y categoría</dt>
+    <dd class="col-sm-9">
+      {% if rev.subject_area_and_category %}
+        <ul class="list-unstyled mb-0">
+          {% for sc in rev.subject_area_and_category %}
+            <li>{{ sc }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        –
+      {% endif %}
+    </dd>
+
+    <dt class="col-sm-3">Publisher</dt>
+    <dd class="col-sm-9">{{ rev.publisher or '–' }}</dd>
+
+    <dt class="col-sm-3">ISSN</dt>
+    <dd class="col-sm-9">{{ rev.issn or '–' }}</dd>
+
+    <dt class="col-sm-3">Tipo de publicación</dt>
+    <dd class="col-sm-9">{{ rev.publication_type or '–' }}</dd>
+
+    <dt class="col-sm-3">Widget</dt>
+    <dd class="col-sm-9">
+      {% if rev.widget %}
+        <div>{{ rev.widget | safe }}</div>
+      {% else %}
+        –
+      {% endif %}
+    </dd>
+  </dl>
+  <a href="{{ request.referrer or url_for('index') }}" class="btn btn-secondary">
+    ← Volver
+  </a>
+</div>
+{% endblock %}
