@@ -1,0 +1,9 @@
+# Entorno virtual
+.venv/
+
+# Archivos compilados
+__pycache__/
+*.pyc
+
+# Datos generados
+datos/json/*.json
