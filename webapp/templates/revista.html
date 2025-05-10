@@ -1,56 +1,53 @@
-{% extends 'base.html' %}
-
-{% block title %}{{ titulo }} – Detalle{% endblock %}
-
+{% extends "base.html" %}
 {% block content %}
-<div class="container mt-4">
-  <h2>{{ titulo }}</h2>
-  <dl class="row">
-    <dt class="col-sm-3">H-Index</dt>
-    <dd class="col-sm-9">{{ rev.h_index or '–' }}</dd>
+  <div class="container mt-4">
+    <h1 class="mb-3">{{ titulo }}</h1>
 
-    <dt class="col-sm-3">Sitio web</dt>
-    <dd class="col-sm-9">
-      {% if rev.site_web %}
-        <a href="{{ rev.site_web }}" target="_blank">{{ rev.site_web }}</a>
-      {% else %}
-        –
-      {% endif %}
-    </dd>
+    <!-- Datos SCImago -->
+    <h2>Datos SCImago</h2>
+    <ul>
+      <li><strong>H-Index:</strong> {{ rev.h_index or '–' }}</li>
+      <li><strong>Sitio web:</strong>
+        {% if rev.site_web %}
+          <a href="{{ rev.site_web }}" target="_blank">{{ rev.site_web }}</a>
+        {% else %}
+          –
+        {% endif %}
+      </li>
+      <li><strong>Área y categoría:</strong>
+        {% if rev.subject_area_and_category %}
+          {{ rev.subject_area_and_category | join(', ') }}
+        {% else %}
+          –
+        {% endif %}
+      </li>
+      <li><strong>Publisher:</strong> {{ rev.publisher or '–' }}</li>
+      <li><strong>ISSN:</strong> {{ rev.issn or '–' }}</li>
+      <li><strong>Tipo de publicación:</strong> {{ rev.publication_type or '–' }}</li>
+    </ul>
 
-    <dt class="col-sm-3">Área y categoría</dt>
-    <dd class="col-sm-9">
-      {% if rev.subject_area_and_category %}
-        <ul class="list-unstyled mb-0">
-          {% for sc in rev.subject_area_and_category %}
-            <li>{{ sc }}</li>
-          {% endfor %}
-        </ul>
-      {% else %}
-        –
-      {% endif %}
-    </dd>
+    <!-- Widget SCImago -->
+    {% if rev.widget %}
+      <div class="my-4">
+        {{ rev.widget | safe }}
+      </div>
+    {% endif %}
 
-    <dt class="col-sm-3">Publisher</dt>
-    <dd class="col-sm-9">{{ rev.publisher or '–' }}</dd>
+    <!-- Datos Resurchify -->
+    <hr>
+    <h2>Datos extra de Resurchify</h2>
+    <ul>
+      <li><strong>Altmetric Score:</strong> {{ rev.resurchify.altmetric_score or '–' }}</li>
+      <li><strong>Trending Rank:</strong> {{ rev.resurchify.trending_rank or '–' }}</li>
+      <li><strong>Etiquetas:</strong>
+        {% if rev.resurchify.subject_tags %}
+          {{ rev.resurchify.subject_tags | join(', ') }}
+        {% else %}
+          –
+        {% endif %}
+      </li>
+    </ul>
 
-    <dt class="col-sm-3">ISSN</dt>
-    <dd class="col-sm-9">{{ rev.issn or '–' }}</dd>
-
-    <dt class="col-sm-3">Tipo de publicación</dt>
-    <dd class="col-sm-9">{{ rev.publication_type or '–' }}</dd>
-
-    <dt class="col-sm-3">Widget</dt>
-    <dd class="col-sm-9">
-      {% if rev.widget %}
-        <div>{{ rev.widget | safe }}</div>
-      {% else %}
-        –
-      {% endif %}
-    </dd>
-  </dl>
-  <a href="{{ request.referrer or url_for('index') }}" class="btn btn-secondary">
-    ← Volver
-  </a>
-</div>
+    <a href="javascript:history.back()" class="btn btn-secondary mt-3">← Volver</a>
+  </div>
 {% endblock %}

@@ -1,130 +1,136 @@
 import os
 import json
-import time
 import requests
 from bs4 import BeautifulSoup
 
+# ── Rutas ──
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INPUT_JSON   = os.path.join(BASE_DIR, 'datos', 'json', 'revistas.json')
 OUTPUT_JSON  = os.path.join(BASE_DIR, 'datos', 'json', 'revistas_scimago.json')
+CACHE        = {}
 
-HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
-}
+def scrape_scimagojr(title):
+    """
+    Visita SCImago y extrae:
+      - site_web
+      - h_index
+      - subject_area_and_category
+      - publisher
+      - issn
+      - widget
+      - publication_type
+    """
+    slug = title.replace(' ', '%20')
+    url = f'https://www.scimagojr.com/journalsearch.php?q={slug}'
+    try:
+        resp = requests.get(url, headers={'User-Agent':'Mozilla/5.0'}, timeout=10)
+        resp.raise_for_status()
+        soup = BeautifulSoup(resp.text, 'html.parser')
 
-def load_existing():
-    if os.path.exists(OUTPUT_JSON):
-        with open(OUTPUT_JSON, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return {}
+        # Site web
+        link = soup.select_one('.search_results .result_title a')
+        site_web = link['href'] if link and link.has_attr('href') else ''
 
-def save_output(data):
-    with open(OUTPUT_JSON, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+        # H-Index
+        h = soup.select_one('.search_results tbody tr td:nth-of-type(3)')
+        h_index = h.text.strip() if h else ''
 
-def fetch_journal_info(title):
-    """Busca en SCImago y extrae los datos solicitados."""
-    info = {
-        'site_web': '',
-        'h_index': '',
-        'subject_area_and_category': [],
-        'publisher': '',
-        'issn': '',
-        'widget': '',
-        'publication_type': ''
-    }
+        # Publisher
+        pub = soup.select_one('.search_results tbody tr td:nth-of-type(4)')
+        publisher = pub.text.strip() if pub else ''
 
-    # 1) Buscar el journal
-    q = title.replace(' ', '+')
-    url_search = f'https://www.scimagojr.com/journalsearch.php?q={q}'
-    r1 = requests.get(url_search, headers=HEADERS)
-    soup1 = BeautifulSoup(r1.text, 'html.parser')
+        # ISSN
+        issn_el = soup.find(text='Print ISSN:')
+        issn = issn_el.find_next().text.strip() if issn_el else ''
 
-    # Tomar el primer resultado de la tabla
-    tabla = soup1.find('table', class_='searchresults')
-    if not tabla:
-        print(f'⚠️ No hay resultados para: {title}')
-        return info
-    filas = tabla.find_all('tr')
-    if len(filas) < 2:
-        print(f'⚠️ Sin filas en resultados: {title}')
-        return info
-    primera = filas[1].find('a')
-    if not primera or 'href' not in primera.attrs:
-        print(f'⚠️ Sin enlace al detalle: {title}')
-        return info
+        # Subject area and category
+        subj_list = [li.text.strip() for li in soup.select('.search_results tbody tr td:nth-of-type(2) ul li')]
+        subject_area_and_category = subj_list
 
-    detalle_url = 'https://www.scimagojr.com/' + primera['href']
-    r2 = requests.get(detalle_url, headers=HEADERS)
-    soup2 = BeautifulSoup(r2.text, 'html.parser')
+        # Widget (iframe HTML)
+        widget = f'<iframe src="https://www.scimagojr.com/journalwidget.php?issn={issn}" width="100%" height="300"></iframe>' if issn else ''
 
-    # 2) Site web (si existe un enlace externo)
-    ext = soup2.find('a', class_='external-link')
-    if ext and 'href' in ext.attrs:
-        info['site_web'] = ext['href'].strip()
+        # Publication type (no siempre presente)
+        pubtype_el = soup.find(text='Type:')
+        publication_type = pubtype_el.find_next().text.strip() if pubtype_el else ''
 
-    # 3) H-Index
-    hi_tag = soup2.find('div', string='H index')
-    if hi_tag:
-        sib = hi_tag.find_next_sibling('div')
-        if sib:
-            info['h_index'] = sib.text.strip()
+        return {
+            "site_web": site_web,
+            "h_index": h_index,
+            "subject_area_and_category": subject_area_and_category,
+            "publisher": publisher,
+            "issn": issn,
+            "widget": widget,
+            "publication_type": publication_type
+        }
+    except Exception:
+        return {
+            "site_web": "",
+            "h_index": "",
+            "subject_area_and_category": [],
+            "publisher": "",
+            "issn": "",
+            "widget": "",
+            "publication_type": ""
+        }
 
-    # 4) Subject Area and category
-    dt = soup2.find('dt', string=lambda t: t and 'Subject Area and category' in t)
-    if dt:
-        dd = dt.find_next_sibling('dd')
-        if dd:
-            # separa por comas
-            info['subject_area_and_category'] = [s.strip() for s in dd.text.split(',')]
+def scrape_resurchify(slug):
+    """
+    Visita Resurchify y extrae:
+      - altmetric_score
+      - trending_rank
+      - subject_tags
+    """
+    url = f'https://www.resurchify.com/journal/{slug}.html'
+    try:
+        resp = requests.get(url, headers={'User-Agent':'Mozilla/5.0'}, timeout=10)
+        resp.raise_for_status()
+        soup = BeautifulSoup(resp.text, 'html.parser')
 
-    # 5) Publisher, ISSN y Publication Type (en el bloque dl#journalinfo)
-    ji = soup2.find('div', id='journalinfo')
-    if ji:
-        dl = ji.find('dl')
-        if dl:
-            dts = dl.find_all('dt')
-            dds = dl.find_all('dd')
-            for key, val in zip(dts, dds):
-                k = key.text.strip().lower()
-                v = val.text.strip()
-                if 'publisher' in k:
-                    info['publisher'] = v
-                elif 'issn' in k:
-                    # si hay varios, puedes concatenar
-                    info['issn'] = v
-                elif 'type' == k:
-                    info['publication_type'] = v
+        # Selector de ejemplo; ajusta según el HTML real
+        alt_tag = soup.select_one('#impactScore') or soup.select_one('.altmetric-score .value')
+        tr_tag  = soup.select_one('#trendingRank') or soup.select_one('.trending-rank .value')
+        tags_el = soup.select('.subject-tags li')
 
-    # 6) Widget (el código embebible)
-    widget = soup2.find('textarea', id='scimagoWidget')
-    if widget:
-        info['widget'] = widget.text.strip()
-
-    return info
-
-def main():
-    # Cargar JSON de entrada y existentes
-    with open(INPUT_JSON, 'r', encoding='utf-8') as f:
-        revistas = json.load(f)
-    enriched = load_existing()
-
-    total = len(revistas)
-    print(f'Se van a procesar {total} revistas (ya hay {len(enriched)} cacheadas).')
-
-    for i, (title, base) in enumerate(revistas.items(), start=1):
-        if title in enriched:
-            print(f'[{i}/{total}] ✔️ {title} (cached)')
-            continue
-        print(f'[{i}/{total}] Procesando: {title}...')
-        info = fetch_journal_info(title)
-        enriched[title] = {**base, **info}
-        # Guardamos tras cada uno para poder reiniciar si interrumpe
-        save_output(enriched)
-        time.sleep(1)   # educadamente esperamos 1s
-
-    print('✅ Scraping completado.')
-    print(f'Archivo JSON enriquecido en: {OUTPUT_JSON}')
+        return {
+            "altmetric_score": alt_tag.text.strip() if alt_tag else "",
+            "trending_rank" : tr_tag.text.strip()  if tr_tag else "",
+            "subject_tags"  : [li.text.strip() for li in tags_el]
+        }
+    except Exception:
+        return {
+            "altmetric_score": "",
+            "trending_rank": "",
+            "subject_tags": []
+        }
 
 if __name__ == '__main__':
-    main()
+    # Cargo el JSON base
+    with open(INPUT_JSON, encoding='utf-8') as f:
+        revistas = json.load(f)
+
+    enriched = {}
+    total = len(revistas)
+    print(f"Se van a procesar {total} revistas (ya hay {len(CACHE)} cacheadas).")
+
+    for i, (titulo, info) in enumerate(revistas.items(), 1):
+        print(f"[{i}/{total}] Procesando: {titulo}...")
+        scim = scrape_scimagojr(titulo)
+        # slug para Resurchify
+        slug = titulo.replace(' ', '-').lower()
+        resur = scrape_resurchify(slug)
+
+        # Combino todo
+        enriched[titulo] = {
+            "areas": info['areas'],
+            "catalogos": info['catalogos'],
+            **scim,
+            "resurchify": resur
+        }
+
+    # Escribo JSON enriquecido
+    with open(OUTPUT_JSON, 'w', encoding='utf-8') as f:
+        json.dump(enriched, f, ensure_ascii=False, indent=2)
+
+    print(f"Scraping completado.")
+    print(f"Archivo JSON enriquecido en: {OUTPUT_JSON}")

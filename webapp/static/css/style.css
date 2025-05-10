@@ -1,31 +1,58 @@
-/* style.css */
-
 /* Variables de color */
 :root {
-    --unison-blue: #005eb8;
-    --unison-gold: #f1c40f;
-  }
-  
-  /* Aplica el fondo primario de navbar */
-  .bg-primary {
-    background-color: var(--unison-blue) !important;
-  }
-  
-  /* Links activos */
-  .navbar .nav-link.active {
-    color: var(--unison-gold) !important;
-  }
-  
-  /* Títulos */
-  h1, h2, h3, h4, h5, h6 {
-    color: var(--unison-blue);
-  }
-  
-  /* Opcional: estilo de pie de página */
-  footer {
-    background: var(--unison-blue);
-    color: #fff;
-    padding: 1rem 0;
-    text-align: center;
-  }
-  
+  --unison-blue: #005eb8;
+  --unison-gold: #f1c40f;
+}
+
+/* Navbar */
+.bg-primary {
+  background-color: var(--unison-blue) !important;
+}
+
+/* Quitamos viñetas de la lista */
+.navbar-nav {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
+/* Botones redondeados */
+.navbar .btn {
+  border-radius: 50px;
+  padding: 0.5rem 1.2rem;
+  font-weight: 500;
+  transition: background-color .2s, color .2s;
+}
+
+/* Estilo outline para botones */
+.btn-outline-light {
+  color: #fff;
+  border: 2px solid #fff;
+}
+
+/* Hover suave */
+.btn-outline-light:hover {
+  background-color: rgba(255,255,255,0.2);
+  color: #fff;
+}
+
+/* Botón activo */
+.btn-outline-light.active,
+.btn-outline-light:active {
+  background-color: var(--unison-gold);
+  border-color: var(--unison-gold);
+  color: var(--unison-blue);
+}
+
+/* Encabezados UniSon */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--unison-blue);
+}
+
+/* Footer */
+footer {
+  background: var(--unison-blue);
+  color: #fff;
+  padding: 1rem 0;
+  text-align: center;
+}
