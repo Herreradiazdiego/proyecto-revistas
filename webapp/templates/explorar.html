@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Explorar — UniSon Revistas{% endblock %}
+
+{% block content %}
+  <h2>Explorar por inicial</h2>
+  <p>Haz clic en una letra para ver las revistas que empiezan con ella:</p>
+  <div class="letter-buttons">
+    {% for letra in letras %}
+      <a href="{{ url_for('ver_letra', letra=letra) }}"
+         class="btn btn-outline-light btn-letter mx-1 my-1">
+        {{ letra }}
+      </a>
+    {% endfor %}
+  </div>
+{% endblock %}

@@ -1,79 +1,38 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Catálogo Revistas — UniSon</title>
-
-  <!-- Bootstrap CSS -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  >
-
-  <!-- Tu CSS personalizado -->
+  <meta charset="UTF-8">
+  <title>{% block title %}UniSon Catálogo Revistas{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-
-  <!-- NAVBAR -->
-  <nav class="navbar navbar-expand-lg bg-primary py-3">
-    <div class="container">
-      <!-- Logo + Título -->
-      <a class="navbar-brand d-flex align-items-center text-light" href="{{ url_for('index') }}">
+  <nav class="navbar bg-primary navbar-expand">
+    <div class="container-fluid">
+      <a class="navbar-brand text-white" href="{{ url_for('index') }}">
         <img src="{{ url_for('static', filename='img/logo_unison.png') }}"
-             alt="Logo UniSon"
-             width="60"
-             class="me-2"
-        >
-        <span class="fs-4">Catálogo Revistas</span>
+             alt="Logo Unison" height="40">
+        Unison Revistas
       </a>
-
-      <!-- Botones -->
-      <div>
-        <ul class="navbar-nav d-flex flex-row align-items-center ms-auto">
-          <li class="nav-item mx-1">
-            <a class="btn btn-outline-light {% if request.path=='/' %}active{% endif %}"
-               href="{{ url_for('index') }}">Inicio</a>
-          </li>
-          <li class="nav-item mx-1">
-            <a class="btn btn-outline-light {% if '/area' in request.path and not '/area/' in request.path %}active{% endif %}"
-               href="{{ url_for('listar_areas') }}">Área</a>
-          </li>
-          <li class="nav-item mx-1">
-            <a class="btn btn-outline-light {% if '/catalogo' in request.path and not '/catalogo/' in request.path %}active{% endif %}"
-               href="{{ url_for('listar_catalogos') }}">Catálogos</a>
-          </li>
-          <li class="nav-item mx-1">
-            <a class="btn btn-outline-light {% if '/explorar' in request.path %}active{% endif %}"
-               href="{{ url_for('explorar') }}">Explorar</a>
-          </li>
-          <li class="nav-item mx-1">
-            <a class="btn btn-outline-light {% if '/buscar' in request.path %}active{% endif %}"
-               href="{{ url_for('buscar') }}">Buscar</a>
-          </li>
-          <li class="nav-item mx-1">
-            <a class="btn btn-outline-light {% if '/creditos' in request.path %}active{% endif %}"
-               href="{{ url_for('creditos') }}">Créditos</a>
-          </li>
-        </ul>
-      </div>
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('index') }}">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('listar_areas') }}">Área</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('listar_catalogos') }}">Catálogos</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('explorar') }}">Explorar</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('buscar') }}">Buscar</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('creditos') }}">Créditos</a></li>
+      </ul>
     </div>
   </nav>
 
-  <!-- CONTENIDO -->
-  <div class="container my-4">
+  <main class="container my-4">
     {% block content %}{% endblock %}
-  </div>
+  </main>
 
-  <!-- FOOTER -->
   <footer>
-    <div class="container">
-      <small>© 2025 Universidad de Sonora — Proyecto de Revistas</small>
-    </div>
+    © 2025 Universidad de Sonora — Proyecto de Revistas — Herrera y Sapien
   </footer>
 
-  <!-- Bootstrap JS (opcional) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

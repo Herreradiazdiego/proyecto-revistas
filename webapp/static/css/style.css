@@ -1,58 +1,61 @@
+/* style.css */
+
 /* Variables de color */
 :root {
   --unison-blue: #005eb8;
   --unison-gold: #f1c40f;
 }
 
-/* Navbar */
-.bg-primary {
-  background-color: var(--unison-blue) !important;
-}
-
-/* Quitamos viñetas de la lista */
+/* Reset menú lateral y botones en nav */
 .navbar-nav {
   list-style: none;
   padding-left: 0;
   margin-bottom: 0;
 }
-
-/* Botones redondeados */
-.navbar .btn {
-  border-radius: 50px;
-  padding: 0.5rem 1.2rem;
-  font-weight: 500;
-  transition: background-color .2s, color .2s;
+.navbar-nav .nav-item {
+  display: inline-block;
+  margin-left: 1rem;
+}
+/* Quitar puntos de lista */
+.navbar-nav .nav-link {
+  text-decoration: none;
 }
 
-/* Estilo outline para botones */
-.btn-outline-light {
-  color: #fff;
-  border: 2px solid #fff;
+/* Fondo primario de navbar */
+.bg-primary {
+  background-color: var(--unison-blue) !important;
 }
 
-/* Hover suave */
-.btn-outline-light:hover {
-  background-color: rgba(255,255,255,0.2);
-  color: #fff;
-}
-
-/* Botón activo */
-.btn-outline-light.active,
-.btn-outline-light:active {
-  background-color: var(--unison-gold);
-  border-color: var(--unison-gold);
-  color: var(--unison-blue);
-}
-
-/* Encabezados UniSon */
+/* Títulos */
 h1, h2, h3, h4, h5, h6 {
   color: var(--unison-blue);
 }
 
-/* Footer */
+/* Pie de página */
 footer {
   background: var(--unison-blue);
   color: #fff;
   padding: 1rem 0;
   text-align: center;
 }
+
+/* Botones*/
+.btn-letter {
+  width: 3rem;
+  height: 3rem;
+  line-height: 2.8rem;
+  text-align: center;
+  border-radius: 50%;
+  font-weight: bold;
+  background: var(--unison-blue);
+  color: #fff;
+  border: 2px solid var(--unison-gold);
+  transition: background 0.2s, color 0.2s;
+}
+.btn-letter:hover {
+  background: var(--unison-gold);
+  color: var(--unison-blue);
+}
+
+.mx-1 { margin-left: .25rem; margin-right: .25rem; }
+.my-1 { margin-top: .25rem; margin-bottom: .25rem; }
